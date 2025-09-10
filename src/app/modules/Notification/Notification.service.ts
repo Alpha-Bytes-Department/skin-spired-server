@@ -14,6 +14,8 @@ const getNotificationToDb = async (user: JwtPayload) => {
     unredCount,
   };
 
+  console.log('data', data);
+
   return data;
 };
 
