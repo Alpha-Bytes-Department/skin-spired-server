@@ -11,6 +11,7 @@ const updateZodSchema = z.object({
   googleId: z.string().optional(),
   fcmToken: z.string().optional(),
   dateOfBirth: z.string().optional(),
+  phone: z.string().optional(),
 });
 
 export const UserValidation = {

@@ -14,8 +14,6 @@ const getNotificationToDb = async (user: JwtPayload) => {
     unredCount,
   };
 
-  console.log('data', data);
-
   return data;
 };
 
@@ -45,6 +43,7 @@ const adminNotification = async (query: Record<string, unknown>) => {
     .limit(size)
     .lean();
   const total = await Notification.countDocuments({ type: 'ADMIN' });
+
   const unread = await Notification.countDocuments({ read: false });
 
   const data: any = {

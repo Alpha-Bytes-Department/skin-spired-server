@@ -7,11 +7,8 @@ import { PersonalisationService } from './personalisation.service';
 const createPersonalisation = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
-  let image = getFilePath(req.files, 'images');
-
   const value = {
     userId,
-    image: image ? image : undefined,
     ...req.body,
   };
 

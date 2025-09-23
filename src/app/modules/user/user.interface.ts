@@ -12,6 +12,7 @@ export type IUser = {
   fcmToken?: string;
   dateOfBirth?: string;
   googleId?: string;
+  phone?: string;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;

@@ -5,7 +5,6 @@ export type IPersonalisation = {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  image: string;
   type: string;
   skinLevel: string;
 };

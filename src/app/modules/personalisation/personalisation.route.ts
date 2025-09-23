@@ -4,19 +4,15 @@ import auth from '../../middlewares/auth';
 import fileUploadHandler from '../../middlewares/fileUploadHandler';
 import { PersonalisationController } from './personalisation.controller';
 import { personalisationValidation } from './personalisation.validation';
+import validateRequest from '../../middlewares/validateRequest';
 
 const router = express.Router();
 
 router.post(
   '/create',
-  fileUploadHandler,
   auth(USER_ROLES.USER),
-  (req: Request, res: Response, next: NextFunction) => {
-    if (req.body.data) {
-      req.body = personalisationValidation.parse(JSON.parse(req.body.data));
-    }
-    return PersonalisationController.createPersonalisation(req, res, next);
-  }
+  validateRequest(personalisationValidation),
+  PersonalisationController.createPersonalisation
 );
 
 export const PersonalisationRoutes = router;
