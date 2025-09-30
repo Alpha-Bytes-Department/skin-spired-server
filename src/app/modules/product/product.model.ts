@@ -7,6 +7,8 @@ const productSchema = new Schema<IProduct>(
     ingredients: { type: String, required: true },
     image: { type: [String], required: true },
     howToUse: { type: [String], required: true },
+    note: { type: String, required: false },
+    description: { type: String, required: false },
     skinCondition: {
       type: Schema.Types.ObjectId,
       ref: 'SkinCondition',

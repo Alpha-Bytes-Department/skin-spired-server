@@ -6,6 +6,8 @@ export type IProduct = {
   image: string[];
   howToUse: string[];
   skinCondition: Types.ObjectId;
+  note: string;
+  description: string;
 };
 
 export type UpdateProductPayload = Partial<IProduct> & {

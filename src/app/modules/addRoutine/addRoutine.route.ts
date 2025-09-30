@@ -36,4 +36,10 @@ router.get(
   AddRoutineController.sendMsgWithTimeWise
 );
 
+router.get(
+  '/get-details/:id',
+  auth(USER_ROLES.USER),
+  AddRoutineController.getDetails
+);
+
 export const AddRoutineRoutes = router;

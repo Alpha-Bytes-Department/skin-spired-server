@@ -311,6 +311,15 @@ const sendMsgWithTimeWise = async () => {
   }
 };
 
+const getDetails = async (id: string) => {
+  const isExist = await AddRoutine.findById(id).populate('product');
+  if (!isExist) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Routine not found');
+  }
+
+  return isExist;
+};
+
 export const AddRoutineService = {
   addRoutine,
   getRoutineInHome,
@@ -318,4 +327,5 @@ export const AddRoutineService = {
   chanageStatus,
   getRoutineDataChart,
   sendMsgWithTimeWise,
+  getDetails,
 };

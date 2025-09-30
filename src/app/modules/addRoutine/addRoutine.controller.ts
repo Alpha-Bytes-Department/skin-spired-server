@@ -74,6 +74,17 @@ const sendMsgWithTimeWise = catchAsync(async (req, res) => {
   });
 });
 
+const getDetails = catchAsync(async (req, res) => {
+  const result = await AddRoutineService.getDetails(req.params.id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Routine chart retrieved successfully',
+    data: result,
+  });
+});
+
 export const AddRoutineController = {
   addRoute,
   getRoutineInHome,
@@ -81,4 +92,5 @@ export const AddRoutineController = {
   chanageStatus,
   getRoutineDataChart,
   sendMsgWithTimeWise,
+  getDetails,
 };
