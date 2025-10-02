@@ -54,7 +54,7 @@ const getRoutineInHome = async (
     .select('category product')
     .populate({
       path: 'product',
-      select: 'productName -_id',
+      select: 'productName _id',
     })
     .sort({ createdAt: -1 })
     .skip(skip)
@@ -115,7 +115,7 @@ const getAllRoutine = async (user: string, query: Record<string, unknown>) => {
   const result = await AddRoutine.find(whereConditions)
     .populate({
       path: 'product',
-      //   select: 'productName -_id',
+      select: 'productName -_id',
     })
     .sort({ createdAt: -1 })
     .skip(skip)

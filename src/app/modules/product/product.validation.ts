@@ -9,6 +9,8 @@ const createProductSchema = z.object({
   skinCondition: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, 'Invalid skin condition ID'),
+  description: z.string().optional(),
+  note: z.string().optional(),
 });
 
 const updateProductSchema = z.object({
@@ -19,6 +21,8 @@ const updateProductSchema = z.object({
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, 'Invalid skin condition ID')
     .optional(),
+  descriptions: z.string().optional(),
+  note: z.string().optional(),
 });
 
 export const ProductValidation = {
