@@ -25,6 +25,7 @@ const addRoutine = async (payload: IAddRoutine) => {
     endDate: payload.endDate,
     user: payload.user,
   });
+
   if (isExistRoute) {
     throw new Error(
       `Routine already exist for this date ${isExistRoute.startDate} and ${isExistRoute.endDate} `
