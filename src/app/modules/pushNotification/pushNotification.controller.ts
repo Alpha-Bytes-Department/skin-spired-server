@@ -14,6 +14,21 @@ const sendNotification = catchAsync(async (req, res) => {
   });
 });
 
+const getAllMyNotification = catchAsync(async (req, res) => {
+  const result = await PushNotificationService.getAllMyNotification(
+    req.user.id,
+    req.query
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Notification retrived successfully',
+    data: result,
+  });
+});
+
 export const PushNotificationController = {
   sendNotification,
+  getAllMyNotification,
 };
