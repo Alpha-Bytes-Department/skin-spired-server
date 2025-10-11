@@ -5,51 +5,109 @@ import { PushNotification } from './pushNotification.model';
 import { sendPushNotification } from '../../../shared/firebase';
 import { User } from '../user/user.model';
 
+const singleUserNotification = async (payload: IPushNotification) => {
+  const { title, body, userId } = payload;
+
+  try {
+    // Validate request data
+    if (!title || !body || !userId) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        `Missing required fields: ${title} ${body} ${userId} `
+      );
+    }
+
+    // Find the user by ID and ensure they have an FCM token
+    const user = await User.findOne({
+      _id: userId,
+      fcmToken: { $exists: true, $ne: null },
+    }).select('fcmToken');
+
+    if (!user) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        'No user with a valid FCM token found.'
+      );
+    }
+
+    const token: any = user.fcmToken;
+
+    // Send push notification
+    const notification = await sendPushNotification([token], {
+      title,
+      body,
+    });
+
+    // Save log into PushNotifica tion collection
+    await PushNotification.create({
+      title,
+      body,
+      tokens: [token],
+      userId,
+      status: notification.error ? 'failed' : 'sent',
+    });
+
+    return notification;
+  } catch (error) {
+    console.error('Error sending push notification:', error);
+    throw error;
+  }
+};
+
 // const sendNotifications = async (payload: IPushNotification) => {
-//   const { title, body, userId } = payload;
+//   const { title, body } = payload;
 
 //   try {
-//     // Validate request data
-//     if (!title || !body || !userId) {
+//     // ✅ Validate request data
+//     if (!title || !body) {
 //       throw new ApiError(
 //         StatusCodes.BAD_REQUEST,
-//         `Missing required fields: ${title} ${body} ${userId} `
+//         `Missing required fields: ${title} ${body}`
 //       );
 //     }
 
-//     // Find the user by ID and ensure they have an FCM token
-//     const user = await User.findOne({
-//       _id: userId,
+//     // ✅ Fetch users with valid FCM tokens
+//     const usersWithTokens = await User.find({
 //       fcmToken: { $exists: true, $ne: null },
-//     }).select('fcmToken');
+//     });
 
-//     if (!user) {
+//     if (!usersWithTokens.length) {
 //       throw new ApiError(
 //         StatusCodes.NOT_FOUND,
-//         'No user with a valid FCM token found.'
+//         'No users with valid FCM tokens found.'
 //       );
 //     }
 
-//     const token: any = user.fcmToken;
+//     let results: any[] = [];
 
-//     // Send push notification
-//     const notification = await sendPushNotification([token], {
-//       title,
-//       body,
-//     });
+//     // ✅ Loop through each user and send individually
+//     for (const user of usersWithTokens) {
+//       const token: any = user.fcmToken;
 
-//     // Save log into PushNotification collection
-//     await PushNotification.create({
-//       title,
-//       body,
-//       tokens: [token],
-//       userId,
-//       status: notification.error ? 'failed' : 'sent',
-//     });
+//       // Send push notification to this user
+//       const notification = await sendPushNotification([token], { title, body });
 
-//     return notification;
+//       console.log(notification);
+
+//       // Save to DB individually
+//       const savedNotification = await PushNotification.create({
+//         title,
+//         body,
+//         tokens: [token],
+//         userId: user._id, // only one user ID
+//         status: notification.error ? 'failed' : 'sent',
+//       });
+
+//       results.push({
+//         userId: user._id,
+//         token,
+//         status: savedNotification.status,
+//       });
+//     }
+
+//     return results;
 //   } catch (error) {
-//     console.error('Error sending push notification:', error);
+//     console.error('Error sending push notifications:', error);
 //     throw error;
 //   }
 // };
@@ -78,29 +136,41 @@ const sendNotifications = async (payload: IPushNotification) => {
       );
     }
 
-    let results: any[] = [];
+    const results: any[] = [];
 
-    // ✅ Loop through each user and send individually
     for (const user of usersWithTokens) {
       const token: any = user.fcmToken;
 
-      // Send push notification to this user
-      const notification = await sendPushNotification([token], { title, body });
+      // ✅ Send push notification
+      const response = await sendPushNotification([token], { title, body });
 
-      // Save to DB individually
-      const savedNotification = await PushNotification.create({
-        title,
-        body,
-        tokens: [token],
-        userId: user._id, // only one user ID
-        status: notification.error ? 'failed' : 'sent',
-      });
+      // ✅ Check success from response
+      const success = response?.responses?.[0]?.success === true;
 
-      results.push({
-        userId: user._id,
-        token,
-        status: savedNotification.status,
-      });
+      if (success) {
+        // Save to DB only if successful
+        await PushNotification.create({
+          title,
+          body,
+          tokens: [token],
+          userId: user._id,
+          status: 'sent',
+        });
+
+        results.push({
+          userId: user._id,
+          token,
+          status: 'sent',
+        });
+      } else {
+        console.warn(`❌ Notification failed for user: ${user._id}`);
+
+        results.push({
+          userId: user._id,
+          token,
+          status: 'failed',
+        });
+      }
     }
 
     return results;
@@ -141,4 +211,5 @@ const getAllMyNotification = async (
 export const PushNotificationService = {
   sendNotifications,
   getAllMyNotification,
+  singleUserNotification,
 };

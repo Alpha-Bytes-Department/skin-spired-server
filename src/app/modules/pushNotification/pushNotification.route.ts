@@ -11,6 +11,12 @@ router.post(
   PushNotificationController.sendNotification
 );
 
+router.post(
+  '/single-user-notification',
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  PushNotificationController.singleUserNotification
+);
+
 router.get(
   '/get-all',
   auth(USER_ROLES.USER),
