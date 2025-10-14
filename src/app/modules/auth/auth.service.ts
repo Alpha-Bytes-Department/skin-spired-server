@@ -78,7 +78,7 @@ const googleLogin = async ({
 };
 
 const loginUserFromDB = async (payload: ILoginData) => {
-  const { email, password } = payload;
+  const { email, password, fcmToken } = payload;
   const isExistUser = await User.findOne({ email }).select('+password');
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
@@ -116,6 +116,11 @@ const loginUserFromDB = async (payload: ILoginData) => {
 
   const user: any = isExistUser.toObject();
   delete user.password;
+
+  if (fcmToken) {
+    user.fcmToken = fcmToken;
+    await User.findOneAndUpdate({ email }, { $set: { fcmToken } });
+  }
 
   return { accessToken, refreshToken, user };
 };

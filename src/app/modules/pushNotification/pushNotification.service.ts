@@ -163,7 +163,7 @@ const sendNotifications = async (payload: IPushNotification) => {
           status: 'sent',
         });
       } else {
-        console.warn(`❌ Notification failed for user: ${user._id}`);
+        // console.warn(`❌ Notification failed for user: ${user._id}`);
 
         results.push({
           userId: user._id,
