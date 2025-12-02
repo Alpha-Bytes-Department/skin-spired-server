@@ -61,6 +61,18 @@ const userSchema = new Schema<IUser, UserModal>(
       type: String,
       required: false,
     },
+    age: {
+      type: Number,
+      required: false,
+    },
+    gender: {
+      type: String,
+      required: false,
+    },
+    isNotification: {
+      type: Boolean,
+      default: true,
+    },
 
     authentication: {
       type: {

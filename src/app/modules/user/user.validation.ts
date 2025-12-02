@@ -12,6 +12,9 @@ const updateZodSchema = z.object({
   fcmToken: z.string().optional(),
   dateOfBirth: z.string().optional(),
   phone: z.string().optional(),
+  gender: z.string().optional(),
+  isNotification: z.boolean().optional(),
+  age: z.number().optional(),
 });
 
 export const UserValidation = {

@@ -13,6 +13,9 @@ export type IUser = {
   dateOfBirth?: string;
   googleId?: string;
   phone?: string;
+  age: number;
+  gender: string;
+  isNotification: boolean;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;
