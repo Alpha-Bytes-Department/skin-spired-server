@@ -158,7 +158,7 @@ const updateUserDataFormAdmin = async (id: string, payload: Partial<IUser>) => {
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
-
+  console.log('in');
   const result = await User.findByIdAndUpdate(id, payload, { new: true });
   return result;
 };
