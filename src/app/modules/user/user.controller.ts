@@ -79,10 +79,37 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateUserDataFormAdmin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const value = {
+      ...req.body,
+    };
+
+    let image = getFilePathMultiple(req.files, 'image', 'image');
+
+    if (image && image.length > 0) {
+      value.image = image[0];
+    }
+
+    const result = await UserService.updateUserDataFormAdmin(
+      req.params.id,
+      value
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Profile updated successfully',
+      data: result,
+    });
+  }
+);
+
 export const UserController = {
   createUser,
   getUserProfile,
   updateProfile,
   getAllUser,
   getSingleUser,
+  updateUserDataFormAdmin,
 };

@@ -153,10 +153,21 @@ const getSingleUser = async (id: string): Promise<IUser | null> => {
   return result;
 };
 
+const updateUserDataFormAdmin = async (id: string, payload: Partial<IUser>) => {
+  const isExistUser = await User.findById(id);
+  if (!isExistUser) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
 export const UserService = {
   createUserFromDb,
   getUserProfileFromDB,
   updateProfileToDB,
   getAllUsers,
   getSingleUser,
+  updateUserDataFormAdmin,
 };

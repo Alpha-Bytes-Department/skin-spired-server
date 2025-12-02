@@ -43,4 +43,18 @@ router.get(
   UserController.getUserProfile
 );
 
+router.patch(
+  '/update-user-data/:id',
+  fileUploadHandler,
+  auth(USER_ROLES.ADMIN),
+  (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.data) {
+      req.body = UserValidation.updateZodSchema.parse(
+        JSON.parse(req.body.data)
+      );
+    }
+    return UserController.updateUserDataFormAdmin(req, res, next);
+  }
+);
+
 export const UserRoutes = router;
