@@ -50,7 +50,10 @@ const getAllAnsByUserId = async (id: string, query: Record<string, any>) => {
   const skip = (pages - 1) * size;
 
   const result = await Ans.find({ userId: id })
-    .populate('questionId')
+    .populate({
+      path: 'questionId',
+      select: 'question',
+    })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(size)
