@@ -55,8 +55,34 @@ const getAllQuesntion = async (query: Record<string, any>) => {
   };
 };
 
+const getAllQuesntionForUser = async (query: Record<string, any>) => {
+  const { page, limit } = query;
+
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  const result = await QuestionAndAns.find({ isVisible: true })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(size)
+    .lean();
+
+  const total = await QuestionAndAns.countDocuments({ isVisible: true });
+
+  return {
+    result,
+    meta: {
+      page: pages,
+      limit: size,
+      total,
+    },
+  };
+};
+
 export const QuesntionAndAnsService = {
   createQuesntion,
   updateQuesntion,
   getAllQuesntion,
+  getAllQuesntionForUser,
 };

@@ -23,4 +23,10 @@ router.get(
   QuesntionAndAnsController.getAllQuesntion
 );
 
+router.get(
+  '/get-all-question-for-user',
+  auth(USER_ROLES.USER),
+  QuesntionAndAnsController.getAllQuesntionForUser
+);
+
 export const QuesntionAndAnsRoutes = router;

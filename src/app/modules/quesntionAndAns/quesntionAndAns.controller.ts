@@ -36,8 +36,19 @@ const getAllQuesntion = catchAsync(async (req, res) => {
   });
 });
 
+const getAllQuesntionForUser = catchAsync(async (req, res) => {
+  const result = await QuesntionAndAnsService.getAllQuesntionForUser(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Quesntion retrieved successfully',
+    data: result,
+  });
+});
+
 export const QuesntionAndAnsController = {
   createQuesntion,
   updateQuesntion,
   getAllQuesntion,
+  getAllQuesntionForUser,
 };

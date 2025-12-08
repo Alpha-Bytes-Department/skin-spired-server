@@ -9,4 +9,10 @@ router.post('/create-ans', auth(USER_ROLES.USER), AnsController.createAns);
 
 router.get('/get-ans/:id', auth(USER_ROLES.ADMIN), AnsController.getAllAns);
 
+router.get(
+  '/get-ans-by-user/:id',
+  auth(USER_ROLES.ADMIN),
+  AnsController.getAllAnsByUserId
+);
+
 export const AnsRoutes = router;

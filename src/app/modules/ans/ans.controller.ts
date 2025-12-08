@@ -30,7 +30,18 @@ const getAllAns = catchAsync(async (req, res) => {
   });
 });
 
+const getAllAnsByUserId = catchAsync(async (req, res) => {
+  const result = await AnsService.getAllAnsByUserId(req.params.id, req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Answer retrived successfully',
+    data: result,
+  });
+});
+
 export const AnsController = {
   createAns,
   getAllAns,
+  getAllAnsByUserId,
 };
