@@ -20,6 +20,17 @@ const createAns = catchAsync(async (req, res) => {
   });
 });
 
+const getAllAns = catchAsync(async (req, res) => {
+  const result = await AnsService.getAllAns(req.params.id, req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Answer retrived successfully',
+    data: result,
+  });
+});
+
 export const AnsController = {
   createAns,
+  getAllAns,
 };

@@ -7,4 +7,6 @@ const router = express.Router();
 
 router.post('/create-ans', auth(USER_ROLES.USER), AnsController.createAns);
 
+router.get('/get-ans/:id', auth(USER_ROLES.ADMIN), AnsController.getAllAns);
+
 export const AnsRoutes = router;

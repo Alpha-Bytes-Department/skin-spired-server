@@ -17,6 +17,32 @@ const createAns = async (data: IAns) => {
   return result;
 };
 
+const getAllAns = async (id: string, query: Record<string, any>) => {
+  const { page, limit } = query;
+
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  const result = await Ans.find({ questionId: id })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(size)
+    .lean();
+
+  const total = await Ans.countDocuments({ questionId: id });
+
+  return {
+    result,
+    meta: {
+      page: pages,
+      limit: size,
+      total,
+    },
+  };
+};
+
 export const AnsService = {
   createAns,
+  getAllAns,
 };
