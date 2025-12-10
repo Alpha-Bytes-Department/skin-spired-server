@@ -2,20 +2,33 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { AnsService } from './ans.service';
+import ApiError from '../../../errors/ApiError';
 
 const createAns = catchAsync(async (req, res) => {
   const userId = req.user.id;
 
-  const value = {
-    ...req.body,
-    userId,
-  };
+  const bodyData = Array.isArray(req.body)
+    ? req.body
+    : Array.isArray(req.body?.data)
+    ? req.body.data
+    : [];
 
-  const result = await AnsService.createAns(value);
+  if (bodyData.length === 0) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'No answer data provided');
+  }
+
+  // ✅ Inject userId into every object
+  const payload = bodyData.map((item: any) => ({
+    ...item,
+    userId,
+  }));
+
+  const result = await AnsService.createAns(payload);
+
   sendResponse(res, {
     success: true,
-    statusCode: StatusCodes.OK,
-    message: 'Answer created successfully',
+    statusCode: StatusCodes.CREATED,
+    message: 'Answers created successfully',
     data: result,
   });
 });

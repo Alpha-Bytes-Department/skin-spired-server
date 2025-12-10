@@ -5,9 +5,11 @@ import { QuestionAndAns } from './quesntionAndAns.model';
 
 const createQuesntion = async (data: IQuestionAndAns) => {
   const isExistData = await QuestionAndAns.findOne({ question: data.question });
+
   if (isExistData) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Question already exist');
   }
+
   const question = await QuestionAndAns.create(data);
   return question;
 };

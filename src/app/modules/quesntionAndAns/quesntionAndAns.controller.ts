@@ -5,6 +5,7 @@ import { QuesntionAndAnsService } from './quesntionAndAns.service';
 
 const createQuesntion = catchAsync(async (req, res) => {
   const result = await QuesntionAndAnsService.createQuesntion(req.body);
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.CREATED,

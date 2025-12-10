@@ -4,16 +4,38 @@ import { IAns } from './ans.interface';
 import { Ans } from './ans.model';
 import { QuestionAndAns } from '../quesntionAndAns/quesntionAndAns.model';
 
-const createAns = async (data: IAns) => {
-  const isExistUser = await QuestionAndAns.findOne({
-    _id: data.questionId,
-  });
+// const createAns = async (data: IAns) => {
+//   const isExistUser = await QuestionAndAns.findOne({
+//     _id: data.questionId,
+//   });
 
-  if (!isExistUser) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Question not found');
+//   if (!isExistUser) {
+//     throw new ApiError(StatusCodes.NOT_FOUND, 'Question not found');
+//   }
+
+//   const result = await Ans.create(data);
+//   return result;
+// };
+
+const createAns = async (data: IAns[]) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'No answer data provided');
   }
 
-  const result = await Ans.create(data);
+  const questionIds = [...new Set(data.map(item => item.questionId))];
+
+  const existingQuestions = await QuestionAndAns.find({
+    _id: { $in: questionIds },
+  });
+
+  if (existingQuestions.length !== questionIds.length) {
+    throw new ApiError(
+      StatusCodes.NOT_FOUND,
+      'One or more questions not found'
+    );
+  }
+
+  const result = await Ans.insertMany(data);
   return result;
 };
 
