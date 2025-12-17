@@ -23,4 +23,16 @@ router.get(
   QuestionOptionController.getAllOption
 );
 
+router.delete(
+  '/delete-question-option/:id',
+  auth(USER_ROLES.ADMIN),
+  QuestionOptionController.deleteOption
+);
+
+router.get(
+  '/get-all-question-option-for-user',
+  auth(USER_ROLES.USER),
+  QuestionOptionController.getAllOptionForUser
+);
+
 export const QuestionOptionRoutes = router;
