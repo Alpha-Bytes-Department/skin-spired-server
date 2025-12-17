@@ -1,4 +1,5 @@
 export type IQuestionAndAns = {
   question: string;
   isVisible: boolean;
+  option: string[];
 };
