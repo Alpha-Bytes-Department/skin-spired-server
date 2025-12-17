@@ -11,4 +11,16 @@ router.post(
   QuestionOptionController.createQuestionOption
 );
 
+router.patch(
+  '/update-question-option/:id',
+  auth(USER_ROLES.ADMIN),
+  QuestionOptionController.updateOption
+);
+
+router.get(
+  '/get-all-question-option/:id',
+  auth(USER_ROLES.ADMIN),
+  QuestionOptionController.getAllOption
+);
+
 export const QuestionOptionRoutes = router;

@@ -13,6 +13,34 @@ const createQuestionOption = catchAsync(async (req, res) => {
   });
 });
 
+const updateOption = catchAsync(async (req, res) => {
+  const result = await QuestionOptionService.updateOption(
+    req.params.id,
+    req.body
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'QuestionOption updated successfully',
+    data: result,
+  });
+});
+
+const getAllOption = catchAsync(async (req, res) => {
+  const result = await QuestionOptionService.getAllOption(
+    req.params.id,
+    req.query
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'QuestionOption retrived successfully',
+    data: result,
+  });
+});
+
 export const QuestionOptionController = {
   createQuestionOption,
+  updateOption,
+  getAllOption,
 };
