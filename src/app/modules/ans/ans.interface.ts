@@ -2,6 +2,6 @@ import { Types } from 'mongoose';
 
 export type IAns = {
   questionId: Types.ObjectId;
-  ans: string;
+  ans: string[];
   userId: Types.ObjectId;
 };
