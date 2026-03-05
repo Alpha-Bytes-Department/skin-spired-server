@@ -11,4 +11,28 @@ router.post(
   LinkInfoController.createLinkInfo,
 );
 
+router.patch(
+  '/update/:id',
+  auth(USER_ROLES.ADMIN),
+  LinkInfoController.updateLinkInfo,
+);
+
+router.get(
+  '/get-all',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  LinkInfoController.getAllLinkInfo,
+);
+
+router.get(
+  '/get-by-id/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  LinkInfoController.getLinkInfoById,
+);
+
+router.delete(
+  '/delete/:id',
+  auth(USER_ROLES.ADMIN),
+  LinkInfoController.deleteLinkInfo,
+);
+
 export const LinkInfoRoutes = router;
