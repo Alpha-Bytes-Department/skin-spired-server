@@ -34,7 +34,7 @@ const updateSkinCondition = catchAsync(async (req, res) => {
 
   const result = await SkinConditionService.updateSkinCondition(
     req.params.id,
-    value
+    value,
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -46,7 +46,7 @@ const updateSkinCondition = catchAsync(async (req, res) => {
 
 const getDetailsSkinCondition = catchAsync(async (req, res) => {
   const result = await SkinConditionService.getDetailsSkinCondition(
-    req.params.id
+    req.params.id,
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -66,9 +66,20 @@ const getAllSkinCondition = catchAsync(async (req, res) => {
   });
 });
 
+const deleteSkinCondition = catchAsync(async (req, res) => {
+  const result = await SkinConditionService.deleteSkinCondition(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Skin Condition deleted successfully',
+    data: result,
+  });
+});
+
 export const SkinConditionController = {
   createSkinCondition,
   updateSkinCondition,
   getDetailsSkinCondition,
   getAllSkinCondition,
+  deleteSkinCondition,
 };

@@ -11,6 +11,7 @@ import { PhotoProgessRoutes } from '../app/modules/photoProgess/photoProgess.rou
 import { DashboardRoutes } from '../app/modules/dashboard/dashboard.route';
 import { QuesntionAndAnsRoutes } from '../app/modules/quesntionAndAns/quesntionAndAns.route';
 import { AnsRoutes } from '../app/modules/ans/ans.route';
+import { LinkInfoRoutes } from '../app/modules/link_info/link_info.route';
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ const apiRoutes = [
   { path: '/dashboard', route: DashboardRoutes },
   { path: '/quesntion', route: QuesntionAndAnsRoutes },
   { path: '/ans', route: AnsRoutes },
+  { path: '/link-info', route: LinkInfoRoutes },
 ];
 
 apiRoutes.forEach(route => router.use(route.path, route.route));

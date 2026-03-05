@@ -14,11 +14,11 @@ router.post(
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body.data) {
       req.body = SkinConditionValidation.createSkinConditionZodSchema.parse(
-        JSON.parse(req.body.data)
+        JSON.parse(req.body.data),
       );
     }
     return SkinConditionController.createSkinCondition(req, res, next);
-  }
+  },
 );
 
 router.patch(
@@ -28,23 +28,28 @@ router.patch(
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body.data) {
       req.body = SkinConditionValidation.updateSkinConditionZodSchema.parse(
-        JSON.parse(req.body.data)
+        JSON.parse(req.body.data),
       );
     }
     return SkinConditionController.updateSkinCondition(req, res, next);
-  }
+  },
 );
 
 router.get(
   '/details/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  SkinConditionController.getDetailsSkinCondition
+  SkinConditionController.getDetailsSkinCondition,
 );
 
 router.get(
   '/get-all',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  SkinConditionController.getAllSkinCondition
+  SkinConditionController.getAllSkinCondition,
+);
+router.delete(
+  '/delete/:id',
+  auth(USER_ROLES.ADMIN),
+  SkinConditionController.deleteSkinCondition,
 );
 
 export const SkinConditionRoutes = router;

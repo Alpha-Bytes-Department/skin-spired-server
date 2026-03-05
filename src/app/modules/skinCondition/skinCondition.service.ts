@@ -12,7 +12,7 @@ const createSkinCondition = async (data: ISkinCondition) => {
 
 const updateSkinCondition = async (
   id: string,
-  data: Partial<ISkinCondition>
+  data: Partial<ISkinCondition>,
 ) => {
   const isExists = await SkinCondition.findById(id);
   if (!isExists) {
@@ -51,7 +51,7 @@ const getAllSkinCondition = async (query: Record<string, unknown>) => {
 
   if (Object.keys(filterData).length > 0) {
     const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({ [field]: value })
+      ([field, value]) => ({ [field]: value }),
     );
     anyConditions.push({ $and: filterConditions });
   }
@@ -81,9 +81,19 @@ const getAllSkinCondition = async (query: Record<string, unknown>) => {
   };
 };
 
+const deleteSkinCondition = async (id: string) => {
+  const isExist = await SkinCondition.findById(id);
+  if (!isExist) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Skin Condition not found');
+  }
+  const result = await SkinCondition.findByIdAndDelete(id);
+  return result;
+};
+
 export const SkinConditionService = {
   createSkinCondition,
   updateSkinCondition,
   getDetailsSkinCondition,
   getAllSkinCondition,
+  deleteSkinCondition,
 };
