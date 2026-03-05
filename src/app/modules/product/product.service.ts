@@ -28,7 +28,7 @@ const updateProduct = async (id: string, payload: UpdateProductPayload) => {
     }
 
     isExistProducts.image = isExistProducts.image.filter(
-      (img: string) => !payload.imagesToDelete!.includes(img)
+      (img: string) => !payload.imagesToDelete!.includes(img),
     );
   }
 
@@ -72,7 +72,7 @@ const getAllProduct = async (query: Record<string, unknown>) => {
 
   if (Object.keys(filterData).length > 0) {
     const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({ [field]: value })
+      ([field, value]) => ({ [field]: value }),
     );
     anyConditions.push({ $and: filterConditions });
   }
@@ -106,7 +106,7 @@ const getAllProduct = async (query: Record<string, unknown>) => {
 
 const getRecommendedProducts = async (
   id: string,
-  query: Record<string, unknown>
+  query: Record<string, unknown>,
 ) => {
   const { page, limit, searchTerm, ...filterData } = query;
 
@@ -116,7 +116,7 @@ const getRecommendedProducts = async (
 
   if (Object.keys(filterData).length > 0) {
     const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({ [field]: value })
+      ([field, value]) => ({ [field]: value }),
     );
     anyConditions.push({ $and: filterConditions });
   }
@@ -161,7 +161,7 @@ const getRelevantProducts = async (query: Record<string, unknown>) => {
 
   if (Object.keys(filterData).length > 0) {
     const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({ [field]: value })
+      ([field, value]) => ({ [field]: value }),
     );
     anyConditions.push({ $and: filterConditions });
   }
@@ -191,6 +191,16 @@ const getRelevantProducts = async (query: Record<string, unknown>) => {
   };
 };
 
+const deleteProduct = async (id: string) => {
+  const isExist = await Product.findById(id);
+  if (!isExist) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found');
+  }
+
+  const result = await Product.findByIdAndDelete(id);
+  return result;
+};
+
 export const ProductService = {
   createProduct,
   updateProduct,
@@ -198,4 +208,5 @@ export const ProductService = {
   getAllProduct,
   getRecommendedProducts,
   getRelevantProducts,
+  deleteProduct,
 };

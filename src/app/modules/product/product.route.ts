@@ -14,11 +14,11 @@ router.post(
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body.data) {
       req.body = ProductValidation.createProductSchema.parse(
-        JSON.parse(req.body.data)
+        JSON.parse(req.body.data),
       );
     }
     return ProductController.createProduct(req, res, next);
-  }
+  },
 );
 
 router.patch(
@@ -35,38 +35,44 @@ router.patch(
 
     if (data) {
       const parsedData = ProductValidation.updateProductSchema.parse(
-        JSON.parse(data)
+        JSON.parse(data),
       );
 
       req.body = { ...parsedData, imagesToDelete };
     }
 
     return ProductController.updateProduct(req, res, next);
-  }
+  },
 );
 
 router.get(
   '/details/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  ProductController.getDetails
+  ProductController.getDetails,
 );
 
 router.get(
   '/get-all',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  ProductController.getAllProduct
+  ProductController.getAllProduct,
 );
 
 router.get(
   '/get-recommended/:id',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  ProductController.getRecommendedProducts
+  ProductController.getRecommendedProducts,
 );
 
 router.get(
   '/get-relevant',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  ProductController.getRelevantProducts
+  ProductController.getRelevantProducts,
+);
+
+router.delete(
+  '/delete/:id',
+  auth(USER_ROLES.ADMIN),
+  ProductController.deleteProduct,
 );
 
 export const ProductRoutes = router;

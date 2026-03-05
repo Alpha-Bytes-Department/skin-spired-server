@@ -67,7 +67,7 @@ const getAllProduct = catchAsync(async (req, res) => {
 const getRecommendedProducts = catchAsync(async (req, res) => {
   const result = await ProductService.getRecommendedProducts(
     req.params.id,
-    req.query
+    req.query,
   );
   sendResponse(res, {
     success: true,
@@ -87,6 +87,16 @@ const getRelevantProducts = catchAsync(async (req, res) => {
   });
 });
 
+const deleteProduct = catchAsync(async (req, res) => {
+  const result = await ProductService.deleteProduct(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Product deleted successfully',
+    data: result,
+  });
+});
+
 export const ProductController = {
   createProduct,
   updateProduct,
@@ -94,4 +104,5 @@ export const ProductController = {
   getAllProduct,
   getRecommendedProducts,
   getRelevantProducts,
+  deleteProduct,
 };
