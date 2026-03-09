@@ -14,6 +14,18 @@ const updateNotificationManagement = catchAsync(async (req, res) => {
   });
 });
 
+const getNotificationManagement = catchAsync(async (req, res) => {
+  const result =
+    await NotificationManagementService.getNotificationManagement();
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Notification Management retrieved successfully',
+    data: result,
+  });
+});
+
 export const NotificationManagementController = {
   updateNotificationManagement,
+  getNotificationManagement,
 };

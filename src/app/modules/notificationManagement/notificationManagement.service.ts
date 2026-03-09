@@ -14,6 +14,13 @@ const updateNotificationManagement = async (
 
   return result;
 };
+
+const getNotificationManagement = async () => {
+  const result = await NotificationManagement.find();
+  return result;
+};
+
 export const NotificationManagementService = {
   updateNotificationManagement,
+  getNotificationManagement,
 };

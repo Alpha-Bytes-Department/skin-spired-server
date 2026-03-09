@@ -11,4 +11,10 @@ router.patch(
   NotificationManagementController.updateNotificationManagement,
 );
 
+router.get(
+  '/get-notification-management',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  NotificationManagementController.getNotificationManagement,
+);
+
 export const NotificationManagementRoutes = router;
