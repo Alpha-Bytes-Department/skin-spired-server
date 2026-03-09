@@ -12,6 +12,7 @@ import { DashboardRoutes } from '../app/modules/dashboard/dashboard.route';
 import { QuesntionAndAnsRoutes } from '../app/modules/quesntionAndAns/quesntionAndAns.route';
 import { AnsRoutes } from '../app/modules/ans/ans.route';
 import { LinkInfoRoutes } from '../app/modules/link_info/link_info.route';
+import { NotificationManagementRoutes } from '../app/modules/notificationManagement/notificationManagement.route';
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ const apiRoutes = [
   { path: '/quesntion', route: QuesntionAndAnsRoutes },
   { path: '/ans', route: AnsRoutes },
   { path: '/link-info', route: LinkInfoRoutes },
+  { path: '/notification-management', route: NotificationManagementRoutes },
 ];
 
 apiRoutes.forEach(route => router.use(route.path, route.route));
