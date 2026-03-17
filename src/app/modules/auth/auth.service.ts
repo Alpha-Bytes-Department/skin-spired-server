@@ -96,7 +96,8 @@ const appleLogin = async (payload: { token: string }) => {
 
     // Step 2 — Prepare user fields
     const userFields: Partial<IUser> = {
-      firstName: appleData.firstName + ' ' + appleData.lastName,
+      firstName: appleData.firstName,
+      lastName: appleData.lastName,
       email: appleData.email,
       appleId: appleData.sub,
       role: USER_ROLES.USER,
@@ -136,12 +137,12 @@ const appleLogin = async (payload: { token: string }) => {
       jwtHelper.createToken(
         tokenPayload,
         config.jwt.jwt_secret as Secret,
-        config.jwt.jwt_expire_in as string,
+        '35d',
       ),
       jwtHelper.createToken(
         tokenPayload,
         config.jwt.jwtRefreshSecret as Secret,
-        config.jwt.jwtRefreshExpiresIn as string,
+        '65d',
       ),
     ]);
 

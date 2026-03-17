@@ -28,7 +28,7 @@ const addRoutine = async (payload: IAddRoutine) => {
 
   if (isExistRoute) {
     throw new Error(
-      `Routine already exist for this date ${isExistRoute.startDate} and ${isExistRoute.endDate} `
+      `Routine already exist for this date ${isExistRoute.startDate} and ${isExistRoute.endDate} `,
     );
   }
 
@@ -38,7 +38,7 @@ const addRoutine = async (payload: IAddRoutine) => {
 
 const getRoutineInHome = async (
   user: string,
-  query: Record<string, unknown>
+  query: Record<string, unknown>,
 ) => {
   const { page, limit } = query;
 
@@ -98,7 +98,7 @@ const getAllRoutine = async (user: string, query: Record<string, unknown>) => {
 
   if (Object.keys(filterData).length > 0) {
     const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({ [field]: value })
+      ([field, value]) => ({ [field]: value }),
     );
     anyConditions.push({ $and: filterConditions });
   }
@@ -144,7 +144,7 @@ const chanageStatus = async (id: string) => {
   const result = await AddRoutine.findOneAndUpdate(
     { _id: id },
     { status: 'completed' },
-    { new: true }
+    { new: true },
   );
 
   return result;
@@ -270,7 +270,7 @@ const sendMsgWithTimeWise = async () => {
       const token = userMap.get(routine.user.toString());
 
       if (!token) {
-        logger.error(`No valid FCM token for user ${routine.user}`);
+        // logger.error(`No valid FCM token for user ${routine.user}`);
         continue;
       }
 
