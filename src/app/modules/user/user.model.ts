@@ -73,6 +73,10 @@ const userSchema = new Schema<IUser, UserModal>(
       type: Boolean,
       default: true,
     },
+    appleId: {
+      type: String,
+      required: false,
+    },
 
     authentication: {
       type: {
@@ -92,7 +96,7 @@ const userSchema = new Schema<IUser, UserModal>(
       select: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.statics.isExistUserById = async (id: string) => {
@@ -114,7 +118,7 @@ userSchema.statics.isAccountCreated = async (id: string) => {
 //is match password
 userSchema.statics.isMatchPassword = async (
   password: string,
-  hashPassword: string
+  hashPassword: string,
 ): Promise<boolean> => {
   return await bcrypt.compare(password, hashPassword);
 };
@@ -131,7 +135,7 @@ userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(
       this.password,
-      Number(config.bcrypt_salt_rounds)
+      Number(config.bcrypt_salt_rounds),
     );
   }
 

@@ -57,7 +57,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   if (!token) {
     throw new ApiError(
       StatusCodes.UNAUTHORIZED,
-      'Unauthorized: No token provided'
+      'Unauthorized: No token provided',
     );
   }
 
@@ -107,11 +107,22 @@ const resendVerificationEmail = catchAsync(
       message: 'Generate OTP and send successfully',
       data: result,
     });
-  }
+  },
 );
 
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.googleLogin(req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User login successfully',
+    data: result,
+  });
+});
+
+const appleLogin = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthService.appleLogin(req.body);
 
   sendResponse(res, {
     success: true,
@@ -130,4 +141,5 @@ export const AuthController = {
   newAccessToken,
   resendVerificationEmail,
   googleLogin,
+  appleLogin,
 };

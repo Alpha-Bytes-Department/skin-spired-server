@@ -18,6 +18,8 @@ import { ResetToken } from '../resetToken/resetToken.model';
 import downloadImage from '../../../util/file/downloadImage';
 import { USER_ROLES } from '../../../enums/user';
 import deleteFile from '../../../util/file/deleteFile';
+import { verifyAppleToken } from '../../../helpers/appleHelper';
+import { IUser } from '../user/user.interface';
 
 const googleLogin = async ({
   email,
@@ -64,17 +66,95 @@ const googleLogin = async ({
   const accessToken = jwtHelper.createToken(
     { id: user._id, role: user.role, email: user.email },
     config.jwt.jwt_secret as Secret,
-    '35d'
+    '35d',
   );
 
   // Create refresh token
   const refreshToken = jwtHelper.createToken(
     { id: user._id, role: user.role, email: user.email },
     config.jwt.jwtRefreshSecret as Secret,
-    '65d'
+    '65d',
   );
 
   return { accessToken, refreshToken, user };
+};
+
+const appleLogin = async (payload: { token: string }) => {
+  if (!payload.token)
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Apple token is required');
+
+  try {
+    // Step 1 — Verify Apple ID token
+    const appleData = await verifyAppleToken(payload.token);
+
+    if (!appleData?.email) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        'Unable to retrieve email from Apple account',
+      );
+    }
+
+    // Step 2 — Prepare user fields
+    const userFields: Partial<IUser> = {
+      firstName: appleData.firstName + ' ' + appleData.lastName,
+      email: appleData.email,
+      appleId: appleData.sub,
+      role: USER_ROLES.USER,
+      verified: true,
+    };
+
+    // Step 3 — Find or create user
+    let user = await User.findOne({
+      $or: [{ email: appleData.email }, { appleId: appleData.sub }],
+    });
+
+    if (!user) {
+      user = await User.create(userFields);
+    } else if (!user.appleId) {
+      user = await User.findByIdAndUpdate(
+        user._id,
+        { ...userFields, name: userFields.firstName || user.lastName },
+        { new: true },
+      );
+    }
+
+    if (!user) {
+      throw new ApiError(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        'Failed to create or update user',
+      );
+    }
+
+    // Step 4 — Generate access & refresh tokens
+    const tokenPayload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      jwtHelper.createToken(
+        tokenPayload,
+        config.jwt.jwt_secret as Secret,
+        config.jwt.jwt_expire_in as string,
+      ),
+      jwtHelper.createToken(
+        tokenPayload,
+        config.jwt.jwtRefreshSecret as Secret,
+        config.jwt.jwtRefreshExpiresIn as string,
+      ),
+    ]);
+
+    // Step 5 — Prepare response
+    const { password, authentication, ...userObject } = user.toObject();
+    return { user: userObject, accessToken, refreshToken };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Error processing Apple login',
+    );
+  }
 };
 
 const loginUserFromDB = async (payload: ILoginData) => {
@@ -88,7 +168,7 @@ const loginUserFromDB = async (payload: ILoginData) => {
   if (!isExistUser.verified) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'Please verify your account, then try to login again'
+      'Please verify your account, then try to login again',
     );
   }
 
@@ -104,14 +184,14 @@ const loginUserFromDB = async (payload: ILoginData) => {
   const accessToken = jwtHelper.createToken(
     { id: isExistUser._id, role: isExistUser.role, email: isExistUser.email },
     config.jwt.jwt_secret as Secret,
-    '35d'
+    '35d',
   );
 
   //create token
   const refreshToken = jwtHelper.createToken(
     { id: isExistUser._id, role: isExistUser.role, email: isExistUser.email },
     config.jwt.jwtRefreshSecret as Secret,
-    '65d'
+    '65d',
   );
 
   const user: any = isExistUser.toObject();
@@ -162,7 +242,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
   if (!oneTimeCode) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'Please provide the OTP. Check your phone; we sent a code.'
+      'Please provide the OTP. Check your phone; we sent a code.',
     );
   }
 
@@ -174,7 +254,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
   if (date > isExistUser.authentication?.expireAt) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'OTP has expired. Please try again.'
+      'OTP has expired. Please try again.',
     );
   }
 
@@ -203,7 +283,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
     const createToken = jwtHelper.createToken(
       { id: isExistUser._id, email: isExistUser.email, role: isExistUser.role },
       config.jwt.jwt_secret as Secret,
-      '30d'
+      '30d',
     );
 
     await ResetToken.create({
@@ -225,13 +305,13 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
   accessToken = jwtHelper.createToken(
     { id: isExistUser._id, email: isExistUser.email, role: isExistUser.role },
     config.jwt.jwt_secret as Secret,
-    '30d'
+    '30d',
   );
   // Generate JWT tokens
   refreshToken = jwtHelper.createToken(
     { id: isExistUser._id, email: isExistUser.email, role: isExistUser.role },
     config.jwt.jwt_secret as Secret,
-    '60d'
+    '60d',
   );
 
   return { message, accessToken, refreshToken, user, data };
@@ -240,7 +320,7 @@ const verifyEmailToDB = async (payload: IVerifyEmail) => {
 //forget password
 const resetPasswordToDB = async (
   token: string,
-  payload: IAuthResetPassword
+  payload: IAuthResetPassword,
 ) => {
   const { newPassword, confirmPassword } = payload;
   //isExist token
@@ -251,13 +331,13 @@ const resetPasswordToDB = async (
 
   //user permission check
   const isExistUser = await User.findById(isExistToken.user).select(
-    '+authentication'
+    '+authentication',
   );
 
   if (!isExistUser?.authentication?.isResetPassword) {
     throw new ApiError(
       StatusCodes.UNAUTHORIZED,
-      "You don't have permission to change the password. Please click again to 'Forgot Password'"
+      "You don't have permission to change the password. Please click again to 'Forgot Password'",
     );
   }
 
@@ -266,7 +346,7 @@ const resetPasswordToDB = async (
   if (!isValid) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'Token expired, Please click again to the forget password'
+      'Token expired, Please click again to the forget password',
     );
   }
 
@@ -274,13 +354,13 @@ const resetPasswordToDB = async (
   if (newPassword !== confirmPassword) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      "New password and Confirm password doesn't match!"
+      "New password and Confirm password doesn't match!",
     );
   }
 
   const hashPassword = await bcrypt.hash(
     newPassword,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds),
   );
 
   const updateData = {
@@ -297,7 +377,7 @@ const resetPasswordToDB = async (
 
 const changePasswordToDB = async (
   user: JwtPayload,
-  payload: IChangePassword
+  payload: IChangePassword,
 ) => {
   const { currentPassword, newPassword, confirmPassword } = payload;
   const isExistUser = await User.findById(user.id).select('+password');
@@ -317,21 +397,21 @@ const changePasswordToDB = async (
   if (currentPassword === newPassword) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'Please give different password from current password'
+      'Please give different password from current password',
     );
   }
   //new password and confirm password check
   if (newPassword !== confirmPassword) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      "Password and Confirm password doesn't matched"
+      "Password and Confirm password doesn't matched",
     );
   }
 
   //hash password
   const hashPassword = await bcrypt.hash(
     newPassword,
-    Number(config.bcrypt_salt_rounds)
+    Number(config.bcrypt_salt_rounds),
   );
 
   const updateData = {
@@ -348,7 +428,7 @@ const newAccessTokenToUser = async (token: string) => {
 
   const verifyUser = jwtHelper.verifyToken(
     token,
-    config.jwt.jwtRefreshSecret as Secret
+    config.jwt.jwtRefreshSecret as Secret,
   );
 
   const isExistUser = await User.findById(verifyUser?.id);
@@ -360,7 +440,7 @@ const newAccessTokenToUser = async (token: string) => {
   const accessToken = jwtHelper.createToken(
     { id: isExistUser._id, role: isExistUser.role, email: isExistUser.email },
     config.jwt.jwt_secret as Secret,
-    config.jwt.jwt_expire_in as string
+    config.jwt.jwt_expire_in as string,
   );
 
   return { accessToken };
@@ -373,7 +453,7 @@ const resendVerificationEmailToDB = async (email: string) => {
   if (!existingUser) {
     throw new ApiError(
       StatusCodes.NOT_FOUND,
-      'User with this email does not exist!'
+      'User with this email does not exist!',
     );
   }
 
@@ -400,7 +480,7 @@ const resendVerificationEmailToDB = async (email: string) => {
   await User.findOneAndUpdate(
     { email: email },
     { $set: { authentication } },
-    { new: true }
+    { new: true },
   );
 };
 
@@ -413,4 +493,5 @@ export const AuthService = {
   newAccessTokenToUser,
   resendVerificationEmailToDB,
   googleLogin,
+  appleLogin,
 };

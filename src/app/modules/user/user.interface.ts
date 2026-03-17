@@ -12,6 +12,7 @@ export type IUser = {
   fcmToken?: string;
   dateOfBirth?: string;
   googleId?: string;
+  appleId?: string;
   phone?: string;
   age: number;
   gender: string;

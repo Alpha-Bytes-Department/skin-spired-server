@@ -19,7 +19,7 @@ const createUser = catchAsync(
       message:
         'Please check your email to verify your account. We have sent you an OTP to complete the registration process.',
     });
-  }
+  },
 );
 
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
@@ -56,7 +56,7 @@ const updateProfile = catchAsync(
       message: 'Profile updated successfully',
       data: result,
     });
-  }
+  },
 );
 
 const getAllUser = catchAsync(async (req: Request, res: Response) => {
@@ -93,7 +93,7 @@ const updateUserDataFormAdmin = catchAsync(
 
     const result = await UserService.updateUserDataFormAdmin(
       req.params.id,
-      value
+      value,
     );
 
     sendResponse(res, {
@@ -102,7 +102,7 @@ const updateUserDataFormAdmin = catchAsync(
       message: 'Profile updated successfully',
       data: result,
     });
-  }
+  },
 );
 
 export const UserController = {
