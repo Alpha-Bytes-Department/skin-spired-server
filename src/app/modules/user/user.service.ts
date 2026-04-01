@@ -15,14 +15,14 @@ const createUserFromDb = async (payload: IUser) => {
   if (payload.role && payload.role === USER_ROLES.ADMIN) {
     throw new ApiError(
       StatusCodes.FORBIDDEN,
-      'You cannot create an Admin user from this route.'
+      'You cannot create an Admin user from this route.',
     );
   }
 
   if (payload.verified === true) {
     throw new ApiError(
       StatusCodes.BAD_REQUEST,
-      'Cannot create a verified user directly.'
+      'Cannot create a verified user directly.',
     );
   }
   payload.role = USER_ROLES.USER;
@@ -48,13 +48,13 @@ const createUserFromDb = async (payload: IUser) => {
   const updatedUser = await User.findByIdAndUpdate(
     newUser._id,
     { authentication },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedUser) {
     throw new ApiError(
       StatusCodes.NOT_FOUND,
-      'Failed to update authentication info'
+      'Failed to update authentication info',
     );
   }
 
@@ -81,7 +81,7 @@ const getAllUsers = async (query: Record<string, unknown>) => {
 
   if (Object.keys(filterData).length > 0) {
     const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({ [field]: value })
+      ([field, value]) => ({ [field]: value }),
     );
     anyConditions.push({ $and: filterConditions });
   }
@@ -115,7 +115,7 @@ const getAllUsers = async (query: Record<string, unknown>) => {
   return data;
 };
 const getUserProfileFromDB = async (
-  user: JwtPayload
+  user: JwtPayload,
 ): Promise<Partial<IUser>> => {
   const { id } = user;
   const isExistUser = await User.findById(id);
@@ -128,7 +128,7 @@ const getUserProfileFromDB = async (
 
 const updateProfileToDB = async (
   user: JwtPayload,
-  payload: Partial<IUser>
+  payload: Partial<IUser>,
 ): Promise<Partial<IUser | null>> => {
   const { id } = user;
   const isExistUser = await User.isExistUserById(id);
@@ -163,6 +163,16 @@ const updateUserDataFormAdmin = async (id: string, payload: Partial<IUser>) => {
   return result;
 };
 
+const deleteAccount = async (id: string) => {
+  const isExistUser = await User.findById(id);
+  if (!isExistUser) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  const result = await User.findByIdAndDelete(id);
+  return result;
+};
+
 export const UserService = {
   createUserFromDb,
   getUserProfileFromDB,
@@ -170,4 +180,5 @@ export const UserService = {
   getAllUsers,
   getSingleUser,
   updateUserDataFormAdmin,
+  deleteAccount,
 };

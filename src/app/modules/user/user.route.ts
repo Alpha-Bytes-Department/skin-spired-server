@@ -16,17 +16,17 @@ router.patch(
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body.data) {
       req.body = UserValidation.updateZodSchema.parse(
-        JSON.parse(req.body.data)
+        JSON.parse(req.body.data),
       );
     }
     return UserController.updateProfile(req, res, next);
-  }
+  },
 );
 
 router.get(
   '/user',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  UserController.getUserProfile
+  UserController.getUserProfile,
 );
 
 router.get('/get-all-users', auth(USER_ROLES.ADMIN), UserController.getAllUser);
@@ -34,13 +34,13 @@ router.get('/get-all-users', auth(USER_ROLES.ADMIN), UserController.getAllUser);
 router.get(
   '/get-all-users/:id',
   auth(USER_ROLES.ADMIN),
-  UserController.getSingleUser
+  UserController.getSingleUser,
 );
 
 router.get(
   '/profile',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
-  UserController.getUserProfile
+  UserController.getUserProfile,
 );
 
 router.patch(
@@ -50,11 +50,17 @@ router.patch(
   (req: Request, res: Response, next: NextFunction) => {
     if (req.body.data) {
       req.body = UserValidation.updateZodSchema.parse(
-        JSON.parse(req.body.data)
+        JSON.parse(req.body.data),
       );
     }
     return UserController.updateUserDataFormAdmin(req, res, next);
-  }
+  },
+);
+
+router.delete(
+  '/delete-user',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  UserController.deleteAccount,
 );
 
 export const UserRoutes = router;

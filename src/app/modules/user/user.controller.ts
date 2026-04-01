@@ -105,6 +105,18 @@ const updateUserDataFormAdmin = catchAsync(
   },
 );
 
+const deleteAccount = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.user.id);
+
+  const result = await UserService.deleteAccount(req.user.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User deleted successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
   getUserProfile,
@@ -112,4 +124,5 @@ export const UserController = {
   getAllUser,
   getSingleUser,
   updateUserDataFormAdmin,
+  deleteAccount,
 };
