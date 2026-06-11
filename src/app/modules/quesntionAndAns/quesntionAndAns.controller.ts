@@ -17,7 +17,7 @@ const createQuesntion = catchAsync(async (req, res) => {
 const updateQuesntion = catchAsync(async (req, res) => {
   const result = await QuesntionAndAnsService.updateQuesntion(
     req.params.id,
-    req.body
+    req.body,
   );
   sendResponse(res, {
     success: true,
@@ -47,9 +47,20 @@ const getAllQuesntionForUser = catchAsync(async (req, res) => {
   });
 });
 
+const deleteQuesntion = catchAsync(async (req, res) => {
+  const result = await QuesntionAndAnsService.deleteQuesntion(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Quesntion deleted successfully',
+    data: result,
+  });
+});
+
 export const QuesntionAndAnsController = {
   createQuesntion,
   updateQuesntion,
   getAllQuesntion,
   getAllQuesntionForUser,
+  deleteQuesntion,
 };

@@ -8,25 +8,30 @@ const router = express.Router();
 router.post(
   '/create-question',
   auth(USER_ROLES.ADMIN),
-  QuesntionAndAnsController.createQuesntion
+  QuesntionAndAnsController.createQuesntion,
 );
 
 router.patch(
   '/update-question/:id',
   auth(USER_ROLES.ADMIN),
-  QuesntionAndAnsController.updateQuesntion
+  QuesntionAndAnsController.updateQuesntion,
 );
 
 router.get(
   '/get-all-question',
   auth(USER_ROLES.ADMIN),
-  QuesntionAndAnsController.getAllQuesntion
+  QuesntionAndAnsController.getAllQuesntion,
 );
 
 router.get(
   '/get-all-question-for-user',
   auth(USER_ROLES.USER),
-  QuesntionAndAnsController.getAllQuesntionForUser
+  QuesntionAndAnsController.getAllQuesntionForUser,
+);
+
+router.delete(
+  '/delete-question/:id',
+  QuesntionAndAnsController.deleteQuesntion,
 );
 
 export const QuesntionAndAnsRoutes = router;

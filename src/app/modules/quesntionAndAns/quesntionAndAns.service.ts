@@ -82,9 +82,21 @@ const getAllQuesntionForUser = async (query: Record<string, any>) => {
   };
 };
 
+const deleteQuesntion = async (id: string) => {
+  const isExist = await QuestionAndAns.findById(id);
+
+  if (!isExist) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Question not found');
+  }
+
+  const result = await QuestionAndAns.findByIdAndDelete(id);
+  return result;
+};
+
 export const QuesntionAndAnsService = {
   createQuesntion,
   updateQuesntion,
   getAllQuesntion,
   getAllQuesntionForUser,
+  deleteQuesntion,
 };
